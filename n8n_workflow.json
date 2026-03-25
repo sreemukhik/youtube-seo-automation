@@ -1,0 +1,230 @@
+{
+  "name": "AI-Powered YouTube SEO Automation",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [ 200, 300 ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "youtube_url",
+              "value": "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Set Video URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [ 420, 300 ]
+    },
+    {
+      "parameters": {
+        "functionCode": "let url = $input.item.json.youtube_url;\nlet videoId = '';\nlet match = url.match(/(?:v=|\\/)([0-9A-Za-z_-]{11}).*/);\nif (match) {\n    videoId = match[1];\n}\nreturn { json: { video_id: videoId } };"
+      },
+      "id": "3",
+      "name": "Extract Video ID",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [ 640, 300 ]
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "options": {
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "id",
+                "value": "={{$json[\"video_id\"]}}"
+              },
+              {
+                "name": "part",
+                "value": "snippet,statistics"
+              }
+            ]
+          }
+        }
+      },
+      "id": "4",
+      "name": "YouTube API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [ 860, 300 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst tmpPath = 'C:\\\\Users\\\\KUNCHE SREEMUKHI\\\\AppData\\\\Local\\\\Temp\\\\n8n_yt_input.json';\nfs.writeFileSync(tmpPath, JSON.stringify($json));\n\nreturn [{ json: { tmpPath } }];"
+      },
+      "id": "4.5",
+      "name": "Write Node Data to Temp File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [ 1080, 300 ]
+    },
+    {
+      "parameters": {
+        "command": "python \"C:/Users/KUNCHE SREEMUKHI/.gemini/antigravity/scratch/youtube-seo-automation/analyze_seo.py\"",
+        "executeOnce": false
+      },
+      "id": "5",
+      "name": "Pass to Python Analysis",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [ 1300, 300 ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stdout = JSON.stringify($json.stdout); // safely escapes everything\n\nreturn [{\n  json: {\n    model: \"meta-llama/llama-3.3-70b-instruct:free\",\n    messages: [\n      {\n        role: \"user\",\n        content: `You are an SEO expert. Analyze this video data: ${stdout}\\n\\nGenerate a Markdown report with:\\n1. Video Summary (Performance summary)\\n2. Metrics Analysis\\n3. 3 SEO improvements\\n4. Improved title suggestion.`\n      }\n    ]\n  }\n}];"
+      },
+      "id": "5.5",
+      "name": "Construct Construct OpenRouter Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [ 1520, 300 ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_OPENROUTER_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "6",
+      "name": "OpenRouter API Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [ 1740, 300 ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "Final_Report",
+              "value": "={{$json.choices[0].message.content}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7",
+      "name": "Output Markdown Report",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [ 1960, 300 ]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Video URL": {
+      "main": [
+        [
+          {
+            "node": "Extract Video ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Video ID": {
+      "main": [
+        [
+          {
+            "node": "YouTube API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube API Request": {
+      "main": [
+        [
+          {
+            "node": "Write Node Data to Temp File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Node Data to Temp File": {
+      "main": [
+        [
+          {
+            "node": "Pass to Python Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pass to Python Analysis": {
+      "main": [
+        [
+          {
+            "node": "Construct Construct OpenRouter Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construct Construct OpenRouter Payload": {
+      "main": [
+        [
+          {
+            "node": "OpenRouter API Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter API Request": {
+      "main": [
+        [
+          {
+            "node": "Output Markdown Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
