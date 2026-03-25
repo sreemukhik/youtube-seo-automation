@@ -10,7 +10,7 @@
 
 ---
 
-## 🔧 MANUAL STEP 1: Installing n8n Locally
+##  MANUAL STEP 1: Installing n8n Locally
 *   **Prerequisites:** You must have Node.js installed ([nodejs.org](https://nodejs.org/)).
 *   **Command:** Open your terminal/command prompt and run:
     ```bash
@@ -20,7 +20,7 @@
 *   **Expected Output:** n8n will start and give you a localhost URL (usually `http://localhost:5678`). Open this in your browser to access the n8n canvas.
 *   **Common Error:** `npm ERR! code EACCES` (Permission error). **Fix:** Run terminal as Administrator (Windows) or use `sudo` (Mac/Linux).
 
-## 🔧 MANUAL STEP 2: Creating Google Cloud Project & YouTube API Key
+##  MANUAL STEP 2: Creating Google Cloud Project & YouTube API Key
 *   **Steps:**
     1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
     2.  Click the Project Dropdown at the top left and select **New Project**. Name it `YouTube-SEO-Bot`.
@@ -28,27 +28,27 @@
     4.  Go to **Credentials** -> **Create Credentials** -> **API Key**.
 *   **Expected Output:** A pop-up will show your new API key `AIzaSy...`. Copy this.
 
-## 🔧 MANUAL STEP 3: Getting OpenRouter API Key
+##  MANUAL STEP 3: Getting OpenRouter API Key
 *   **Steps:**
     1.  Go to [OpenRouter](https://openrouter.ai/).
     2.  Sign in and go to Settings -> Keys.
     3.  Click **Create Key**.
 *   **Expected Output:** A completely free API key `sk-or-v1-...`. Copy this for the OpenRouter node later.
 
-## 🔧 MANUAL STEP 4: Python Environment Setup
+##  MANUAL STEP 4: Python Environment Setup
 *   **Steps:**
     1.  Ensure Python is installed (`python --version`).
     2.  Open terminal and run: `pip install pandas`.
     3.  Locate where you saved the `analyze_seo.py` file from this project and copy its **absolute path** (e.g., `C:/Projects/youtube-seo-automation/analyze_seo.py`).
 
-## 🔧 MANUAL STEP 5: Testing Endpoints Manually (Verification)
+##  MANUAL STEP 5: Testing Endpoints Manually (Verification)
 *   **Command:** Test the YouTube API via your browser or terminal to verify your key works:
     ```bash
     curl "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=dQw4w9WgXcQ&key=YOUR_YOUTUBE_API_KEY"
     ```
 *   **Expected Output:** A JSON object showing viewCount and likeCount. If you get a 403 error, your API key is invalid or the YouTube Data API v3 wasn't enabled.
 
-## 🔧 MANUAL STEP 6: Connecting n8n Workflow
+##  MANUAL STEP 6: Connecting n8n Workflow
 *   **Steps:**
     1.  In n8n (`http://localhost:5678`), create a New Workflow.
     2.  Click the top-right options menu (•••) and select **Import from File**.
@@ -66,7 +66,7 @@
 
 ---
 
-## ⚙️ n8n Workflow Breakdown
+##  n8n Workflow Breakdown
 
 1.  **Manual Trigger:** Starts the workflow on click.
 2.  **Set Video URL:** Sets a string value (e.g., `https://www.youtube.com/watch?v=...`)
@@ -80,7 +80,7 @@
 
 ---
 
-## 🐍 Python Script & 🤖 OpenRouter API
+## Python Script & OpenRouter API
 
 *   **Python Logic:**
     *   *Engagement rate* = (likes + comments) / views
@@ -99,28 +99,4 @@
     }
     ```
 
----
 
-## 📄 Sample Output (Final Markdown Report Object)
-
-```markdown
-# YouTube Video SEO Report
-
-## 1. Video Summary
-*   **Title:** Python Pandas Tutorial for Beginners
-*   **Views:** 24,500
-*   **Engagement Rate:** 6.45% (Excellent)
-
-## 2. Metrics Analysis
-*   **Title Strength:** The title is 35 characters long, which is decent, but lacks engaging keywords.
-*   **Top Extracted Keywords:** python, tutorial, data, beginners.
-
-## 3. SEO Improvements
-1.  **Tag Optimization:** You only used 2 tags. Maximize SEO by including variations like 'pandas crash course' and 'python data analysis.'
-2.  **Description Expansion:** Ensure the first 2 lines contain primary keywords since they are visible in search results before expanding.
-3.  **Thumbnail Hook:** (Assumed): Ensure the word 'Pandas' is large and readable on small screens.
-
-## 4. Improved Title Suggestions
-*   *Pandas Tutorial for Beginners: Master Data Analysis in 1 Hour*
-*   *Learn Python Pandas FAST! (Complete 2024 Guide)*
-```
