@@ -29,7 +29,7 @@ def extract_video_id(url):
 
 def get_youtube_data(video_id):
     """Fetch video snippet and statistics from YouTube Data API."""
-    print("📡 Fetching real data from YouTube API...")
+    print(" Fetching real data from YouTube API...")
     url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id={video_id}&key={YOUTUBE_API_KEY}"
     response = requests.get(url)
     
@@ -46,7 +46,7 @@ def get_youtube_data(video_id):
 
 def analyze_with_pandas(video_data):
     """Use pandas to calculate key metrics and identify SEO patterns."""
-    print("📊 Processing data with pandas...")
+    print(" Processing data with pandas...")
     snippet = video_data['snippet']
     stats = video_data['statistics']
     
@@ -80,7 +80,7 @@ def analyze_with_pandas(video_data):
 
 def generate_ai_insights(metrics):
     """Pass the processed metrics to Gemini API for SEO recommendations."""
-    print("🤖 Generating AI SEO insights via Gemini...")
+    print(" Generating AI SEO insights via Gemini...")
     prompt = f"""
     You are an expert SEO Automation AI. Analyze this YouTube video's data:
     
@@ -105,7 +105,7 @@ def main():
     print("Welcome to the AI-Powered YouTube SEO Automation Tool!")
     print("-" * 50)
     
-    video_url = input("🔗 Enter YouTube Video URL: ").strip()
+    video_url = input(" Enter YouTube Video URL: ").strip()
     video_id = extract_video_id(video_url)
     
     if not video_id:
@@ -128,7 +128,7 @@ def main():
         
     print("-" * 50)
     print(f"✅ SUCCESS! Workflow complete.")
-    print(f"📄 Your AI Insight Report is saved at: {report_filename}")
+    print(f" Your AI Insight Report is saved at: {report_filename}")
 
 if __name__ == "__main__":
     main()
